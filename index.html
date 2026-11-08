@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>혈액형 MBTI 조합표</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: 왼쪽 선택 패널 + 오른쪽 결과 카드, 아래에 64칸 지도(16 MBTI x 4 혈액형) */
+:root{
+  --bg:#F2F3F9; --surface:#FFFFFF; --surface2:#E8EAF4; --fg:#14162B; --muted:#565B78; --line:#D5D8E6;
+  --accent:#4B3FD6; --accent-soft:#E4E1FB; --on-accent:#FFFFFF;
+  --bA:#D93B42; --bB:#2468D1; --bO:#B97A00; --bAB:#8340BE;
+  --font-display:'Black Han Sans','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-body:'IBM Plex Sans KR','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1020; --surface:#181B33; --surface2:#22264A; --fg:#ECEEFB; --muted:#9DA2C4; --line:#2E3358;
+    --accent:#9A91FF; --accent-soft:#2A2766; --on-accent:#0E1020;
+    --bA:#FF7077; --bB:#6AA3FF; --bO:#F2B84B; --bAB:#C08BF0;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1020; --surface:#181B33; --surface2:#22264A; --fg:#ECEEFB; --muted:#9DA2C4; --line:#2E3358;
+  --accent:#9A91FF; --accent-soft:#2A2766; --on-accent:#0E1020;
+  --bA:#FF7077; --bB:#6AA3FF; --bO:#F2B84B; --bAB:#C08BF0;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--font-body); font-size:15px; line-height:1.6;
+  padding-block:24px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:20px}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.15;margin:0;text-wrap:balance}
+h2,h3{margin:0}
+.lede{margin:6px 0 0;color:var(--muted);max-width:60ch}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.legend{margin-top:12px;max-width:640px}
+.legend summary{cursor:pointer;font-weight:600;color:var(--accent)}
+.legend ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+.legend b{font-family:var(--font-mono);color:var(--fg)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.top{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.top{grid-template-columns:minmax(0,1fr)}}
+.lab{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.02em}
+
+.bloods{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
+.bl{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 0 8px;display:grid;justify-items:center;gap:2px}
+.bl .l{font-family:var(--font-display);font-size:1.6rem;line-height:1}
+.bl .s{font-size:11px;color:var(--muted)}
+.bl[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+#bloodNote{margin:10px 0 0;font-size:13px;color:var(--muted)}
+
+.grp{margin-top:12px}
+.grp h3{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.types{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tp{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 2px;display:grid;justify-items:center;min-width:0}
+.tp .c{font-family:var(--font-mono);font-weight:600;font-size:13px}
+.tp .n{font-size:11px;color:var(--muted);white-space:nowrap}
+.tp[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tp[aria-pressed="true"] .n{color:inherit;opacity:.9}
+
+.selbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:10px;padding:10px 12px;margin-top:16px}
+.selbar .selTxt{font-weight:600}
+.btn{border:1px solid var(--line);background:var(--surface);padding:8px 12px;border-radius:10px;font-weight:600;font-size:14px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.block{width:100%;margin-top:12px}
+@media (min-width:821px){.pick .selbar .to-result{display:none}}
+
+#test{margin-top:14px;display:grid;gap:12px}
+#test fieldset{border:1px solid var(--line);border-radius:12px;margin:0;padding:10px 12px;min-width:0}
+#test legend{font-weight:600;padding:0 4px;font-size:14px}
+#test label{display:block;margin-top:6px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;font-size:14px}
+#test input{margin-right:8px;accent-color:var(--accent)}
+#test label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+#testMsg{min-height:1.4em;margin:0;font-size:13px;color:var(--muted)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--surface2);font-size:13px;font-weight:600}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.chip.mono{font-family:var(--font-mono)}
+.title{font-family:var(--font-display);font-weight:400;font-size:clamp(1.9rem,5vw,2.8rem);line-height:1.15;margin:12px 0 8px;text-wrap:balance}
+.sum{margin:0;max-width:62ch}
+.letters{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:16px 0 0}
+.lt{background:var(--surface2);border-radius:10px;padding:8px 10px;font-size:13px;min-width:0}
+.lt b{font-family:var(--font-mono);font-size:15px;margin-right:6px;color:var(--accent)}
+.bars{display:grid;gap:12px;margin:18px 0}
+.bar .row{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.bar .nm{font-weight:600}
+.bar .val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:600}
+.bar .hint{color:var(--muted);font-size:12.5px}
+.track{height:8px;border-radius:99px;background:var(--surface2);margin-top:4px;overflow:hidden}
+.fill{height:100%;border-radius:99px;background:var(--accent);width:var(--w)}
+.facts{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px 12px;margin:0}
+.facts dt{color:var(--muted);font-weight:600;font-size:13px}
+.facts dd{margin:0}
+@media (max-width:520px){.facts{grid-template-columns:minmax(0,1fr);gap:2px}.facts dd{margin-bottom:10px}}
+
+.heat h2{font-family:var(--font-display);font-weight:400;font-size:1.5rem}
+.heat-head p{margin:2px 0 0;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+#metricHint{margin:8px 0 0;color:var(--muted);font-size:13px}
+.heat-body{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:20px;margin-top:14px;align-items:start}
+@media (max-width:760px){.heat-body{grid-template-columns:minmax(0,1fr)}}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:separate;border-spacing:3px;width:100%}
+th{font-weight:500;text-align:left;padding:0 6px 0 0;white-space:nowrap}
+thead th{text-align:center;padding:0 0 2px}
+thead th span{font-family:var(--font-display);font-size:1.15rem;font-weight:400}
+th.rh .c{font-family:var(--font-mono);font-weight:600;font-size:13px}
+th.rh .n{font-size:11px;color:var(--muted);margin-left:4px}
+td{padding:0}
+td button{width:100%;height:34px;border:0;border-radius:6px;font-family:var(--font-mono);font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--fg);background:var(--accent-soft);background:color-mix(in srgb,var(--accent) var(--m),var(--surface))}
+td button[aria-current="true"]{outline:2px solid var(--fg);outline-offset:1px;font-weight:600}
+.ranks h3{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.ranks ol{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:4px}
+.ranks li button{width:100%;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;text-align:left}
+.ranks .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.ranks .nm{flex:1;min-width:0}
+.ranks .v{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:600}
+/* 64조합 지도: 작은 화면에서도 글자가 잘리지 않게 */
+.heat .tbl-wrap{overflow-x:visible}
+.heat table{table-layout:fixed;border-spacing:3px 4px}
+.heat th.rh{width:36%;white-space:normal;padding-right:4px}
+.heat th.rh .c{display:block;font-size:14px;line-height:1.2}
+.heat th.rh .n{display:block;margin:0;font-size:12px;line-height:1.25;color:var(--muted);overflow-wrap:anywhere}
+.heat td button{height:42px;font-size:14px}
+.heat thead th span{font-size:1.3rem}
+.heat .seg button{font-size:14px;padding:6px 12px}
+.heat #metricHint{font-size:14px}
+.ranks li button{font-size:14px}
+.ranks .nm{white-space:normal;line-height:1.3}
+/* 높은/낮은 5조합: 가로로 밀어서 보는 카드 */
+.ranks ol{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:8px}
+.ranks li{flex:0 0 140px;scroll-snap-align:start}
+.ranks li button{height:100%;flex-direction:column;align-items:flex-start;gap:4px;padding:10px;position:relative}
+.ranks li .dot{position:absolute;top:12px;right:10px}
+.ranks li .v{order:-1;font-size:1.6rem;line-height:1}
+.ranks li .nm{flex:none;width:100%;font-size:13.5px;line-height:1.35;word-break:keep-all}
+.ranks .rk-hint{margin:0 0 6px;font-size:12.5px;color:var(--muted)}
+/* 밀기가 안 될 때를 위한 화살표 버튼 + 스크롤 보강 */
+.ranks ol,.bgrid{scroll-snap-type:x proximity;touch-action:pan-x pan-y;overscroll-behavior-x:contain;scrollbar-width:thin}
+.ranks ol::-webkit-scrollbar,.bgrid::-webkit-scrollbar{height:6px}
+.ranks ol::-webkit-scrollbar-thumb,.bgrid::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.scbar{display:flex;justify-content:flex-end;gap:6px;margin:0 0 6px}
+.scbar button{width:40px;height:34px;border:1px solid var(--line);background:var(--surface);border-radius:10px;font-size:18px;line-height:1;color:var(--fg)}
+.scbar button:active{background:var(--accent-soft)}
+/* 페이지 넘김 방식(스크롤 없이 버튼으로 교체) */
+.ranks ol.pg{display:block;overflow:visible}
+.bgrid.pg{display:block;overflow:visible}
+.bgrid.pg>.bc{flex:none;width:100%}
+.pg>.off{display:none!important}
+.ranks li{flex:none}
+.scbar{align-items:center}
+.scbar .pc{margin-right:auto;font-size:13px;color:var(--muted)}
+.scbar button{width:46px;height:38px}
+/* 64조합 표 아래에 5조합 카드가 오도록 항상 한 줄 배치 */
+.heat-body{display:block!important}
+.heat-body>.ranks{margin-top:18px;width:100%;clear:both}
+.heat-body>.tbl-wrap{width:100%}
+.scbar{width:100%;position:static}
+.scbar .pc{white-space:nowrap}
+.ranks ol.pg{width:100%}
+.ranks li{height:auto}
+.ranks li button{height:auto;min-height:64px}
+
+
+
+
+
+
+.foot{font-size:12.5px;color:var(--muted);max-width:70ch;margin:0}
+.alert{margin-top:12px;max-width:68ch;background:var(--accent-soft);border-radius:12px;padding:12px 14px;font-size:14px}
+.alert b{display:block;margin-bottom:2px}
+.note{margin:10px 0 0;font-size:12.5px;color:var(--muted);max-width:62ch}
+.fnlist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.fnlist li{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px;font-size:13.5px}
+.fnlist li b{min-width:44px;font-size:12.5px;color:var(--muted)}
+.fn-code{font-family:var(--font-mono);font-weight:600;color:var(--accent)}
+.evi h2{font-family:var(--font-display);font-weight:400;font-size:1.5rem}
+.evi h3{font-size:14px;margin:0 0 8px}
+.evi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:14px}
+@media (max-width:760px){.evi-grid{grid-template-columns:minmax(0,1fr)}}
+.evi ul{margin:0;padding-left:18px;display:grid;gap:8px;font-size:14px}
+.evi a,.srcs a{color:var(--accent);text-underline-offset:2px}
+.evi .sub{margin-top:22px}
+.dist{display:grid;gap:2px;max-width:560px}
+.dist .r{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:8px;align-items:center;font-size:12.5px;background:none;border:0;padding:3px 0;width:100%;text-align:left}
+.dist .c{font-family:var(--font-mono);font-weight:600}
+.dist .t{height:10px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.dist .t i{display:block;height:100%;background:var(--accent);width:var(--w)}
+.dist .v{font-family:var(--font-mono);text-align:right;font-variant-numeric:tabular-nums}
+.srcs{font-size:13px}
+.srcs ul{margin:6px 0 0;padding-left:18px;display:grid;gap:2px;color:var(--muted)}
+.bgrid{display:flex;gap:12px;margin-top:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:10px}
+.bgrid>.bc{flex:0 0 min(86%,340px);scroll-snap-align:start}
+.bgrid::before{content:"";display:none}
+.bswipe{margin:6px 0 0;font-size:12.5px;color:var(--muted)}
+.bc{border:1.5px solid var(--line);border-radius:14px;padding:14px;min-width:0;background:var(--surface)}
+.bc[aria-current="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.bc-h{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;text-align:left;width:100%}
+.bc-h .l{font-family:var(--font-display);font-size:2.1rem;line-height:1}
+.evi .bc h4{margin:12px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin:0}
+.tags span{background:var(--surface2);border-radius:999px;padding:2px 9px;font-size:12.5px}
+.facts.sm{grid-template-columns:104px minmax(0,1fr);gap:6px 10px;font-size:13.5px}
+.facts.sm dt{font-size:12px}
+@media (max-width:520px){.facts.sm{grid-template-columns:minmax(0,1fr);gap:0}.facts.sm dd{margin-bottom:8px}}
+.d2{display:grid;grid-template-columns:36px minmax(0,1fr);gap:8px;align-items:center;margin-bottom:8px}
+.d2 .c{font-family:var(--font-display);font-size:1.2rem}
+.bar2{display:grid;gap:3px}
+.bar2 .b{display:grid;grid-template-columns:minmax(0,1fr) 84px;gap:8px;align-items:center}
+.bar2 .t{height:10px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.bar2 .t i{display:block;height:100%;width:var(--w)}
+.bar2 .kr{background:var(--accent)}
+.bar2 .jp{background:var(--muted)}
+.bar2 em{font-style:normal;font-family:var(--font-mono);font-size:12px}
+.leg{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+.famd>summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;list-style:none}
+.famd>summary::-webkit-details-marker{display:none}
+.famd>summary h2{margin:0}
+/* 제목 앞 가로 삼각형(▶), 펼치면 아래로 */
+.famd.tri>summary{justify-content:flex-start}
+.famd.tri>summary::after{content:none}
+.famd.tri>summary::before{content:"▶";font-size:13px;color:var(--accent);transition:transform .2s;flex:none}
+.famd.tri[open]>summary::before{transform:rotate(90deg)}
+.famd.tri .famh{margin-left:auto}
+/* 자료 점검 박스: 노란색 */
+.panel.evy{background:#fff4c2;border-color:#e8c840}
+.panel.evy h2,.panel.evy .muted,.panel.evy li,.panel.evy summary{color:#3b3200}
+.panel.evy .famh,.panel.evy .note{color:#6b5a00}
+.panel.evy a{color:#7a4a00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .panel.evy{background:#4a3f0a;border-color:#8a7410}
+:root:not([data-theme="light"]) .panel.evy h2,:root:not([data-theme="light"]) .panel.evy .muted,:root:not([data-theme="light"]) .panel.evy li,:root:not([data-theme="light"]) .panel.evy summary{color:#fff1b0}
+:root:not([data-theme="light"]) .panel.evy .famh,:root:not([data-theme="light"]) .panel.evy .note{color:#e8d27a}
+:root:not([data-theme="light"]) .panel.evy a{color:#ffd966}}
+:root[data-theme="dark"] .panel.evy{background:#4a3f0a;border-color:#8a7410}
+:root[data-theme="dark"] .panel.evy h2,:root[data-theme="dark"] .panel.evy .muted,:root[data-theme="dark"] .panel.evy li,:root[data-theme="dark"] .panel.evy summary{color:#fff1b0}
+:root[data-theme="dark"] .panel.evy .famh,:root[data-theme="dark"] .panel.evy .note{color:#e8d27a}
+:root[data-theme="dark"] .panel.evy a{color:#ffd966}
+.famd .famh{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.famd>summary::after{content:"▾";color:var(--muted);transition:transform .2s}
+.famd[open]>summary::after{transform:rotate(180deg)}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+@media (max-width:760px){.fgrid{grid-template-columns:minmax(0,1fr)}}
+.fcard{background:var(--surface2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.fcard h3{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.fcard .fsub{margin:0;font-size:13px;color:var(--muted)}
+.fcard dl{margin:4px 0 8px}
+.fcard dt{font-size:12px;font-weight:600;color:var(--muted);margin-top:8px}
+.fcard dd{margin:2px 0 0;font-size:14px}
+.fcard .btn{align-self:flex-start}
+.pt{margin-top:8px}
+.pt th{font-weight:600;padding:4px 8px;white-space:nowrap}
+.pt td{padding:4px 8px;background:var(--surface2);border-radius:6px;font-size:13.5px}
+.lab h2{font-family:var(--font-display);font-weight:400;font-size:1.5rem}
+.lab .modes{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+.lab .tips{margin:0;padding-left:18px;color:var(--muted);font-size:14px;display:grid;gap:4px}
+.prog{display:flex;align-items:center;gap:10px;margin:12px 0}
+.prog .track{flex:1;margin:0}
+.prog span{font-family:var(--font-mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+.q{border:0;border-top:1px solid var(--line);margin:0;padding:14px 0 6px;min-width:0}
+.q legend{padding:0 0 2px;font-weight:600;font-size:15px;max-width:62ch}
+.lk{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:8px}
+.lo{position:relative;display:block}
+.lo input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.lo span{display:grid;place-items:center;text-align:center;min-height:44px;border:1px solid var(--line);border-radius:10px;font-size:12px;line-height:1.25;padding:4px;background:var(--surface)}
+.lo:has(input:checked) span{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+.lo:has(input:focus-visible) span{outline:2px solid var(--accent);outline-offset:2px}
+.nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+#labMsg{margin:0;font-size:13px;color:var(--muted)}
+.axr{margin:16px 0}
+.axr .top3{display:flex;justify-content:space-between;gap:8px;font-size:14px;flex-wrap:wrap}
+.axr .lt2{font-weight:600}
+.axr .tr{position:relative;height:12px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:4px}
+.axr .tr i{position:absolute;inset:0 auto 0 0;width:var(--w);background:var(--accent)}
+.axr .tr b{position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--fg);opacity:.5}
+.axr .pk{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px;font-size:13px;color:var(--muted)}
+.btn[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.labcode{font-family:var(--font-mono);font-weight:600;font-size:1.6rem;letter-spacing:.04em}
+@media (prefers-reduced-motion:no-preference){.fill{transition:width .3s ease}}
+
+/* ===== 휴대폰 화면 크기 고정 (최대 430px, 한 줄 배치) ===== */
+html{background:#dfe1ee}
+body{max-width:430px;margin:0 auto;min-height:100vh;box-shadow:0 0 0 1px var(--line),0 10px 40px rgba(20,22,43,.15)}
+.wrap{max-width:100%}
+.top,.evi-grid,.fgrid{grid-template-columns:minmax(0,1fr)!important}
+@media (prefers-color-scheme:dark){html{background:#05060d}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>혈액형 MBTI 조합표</h1>
+    <p class="lede">혈액형 4가지와 MBTI 16가지를 고르면, 64가지 조합 중 내 성격 결과가 나옵니다.</p>
+    <div class="alert"><b>먼저 알아두세요</b>일본·미국 약 1만 명 규모 조사에서 혈액형은 성격 차이를 거의 설명하지 못했고, MBTI도 다시 검사하면 결과가 달라질 수 있어요. 재미와 자기 이해용으로 보시고, 근거는 맨 아래 &lsquo;자료 점검&rsquo;에 정리했어요.</div>
+    <details class="legend">
+      <summary>MBTI 알파벳 읽는 법</summary>
+      <ul>
+        <li><b>E / I</b> 에너지 방향. E(외향)는 사람 속에서, I(내향)는 혼자 있을 때 힘을 얻어요.</li>
+        <li><b>S / N</b> 정보를 보는 방식. S(감각)는 눈앞의 사실, N(직관)은 가능성과 전체 그림을 봐요.</li>
+        <li><b>T / F</b> 판단 기준. T(사고)는 논리, F(감정)는 사람과 관계를 먼저 봐요.</li>
+        <li><b>J / P</b> 생활 방식. J(판단)는 계획대로, P(인식)는 상황에 맞춰 유연하게 움직여요.</li>
+      </ul>
+    </details>
+  </header>
+
+  <div class="top">
+    <section class="panel pick" id="pickSec" aria-label="선택">
+      <div class="lab">1. 혈액형</div>
+      <div class="bloods" id="bloods"></div>
+      <p id="bloodNote"></p>
+      <div class="lab" style="margin-top:18px">2. MBTI</div>
+      <div id="types"></div>
+      <div class="selbar"><span class="selTxt"></span><button type="button" class="btn primary to-result">결과 보기</button></div>
+      <button type="button" class="btn block" id="testToggle" aria-expanded="false" aria-controls="lab">MBTI를 모르면? 정밀 검사 해 보기</button>
+    </section>
+    <section class="panel result" id="result" aria-live="polite" tabindex="-1"></section>
+  </div>
+
+  <section class="panel lab" id="lab" hidden aria-labelledby="labH">
+    <h2 id="labH">MBTI 정밀 검사</h2>
+    <div id="labBody"></div>
+  </section>
+
+  <section class="panel family evi" id="family" aria-labelledby="famH">
+    <details class="famd"><summary><h2 id="famH">우리 가족 MBTI × 혈액형</h2><span class="famh" aria-hidden="true">펼치기 / 숨기기</span></summary>
+    <p class="muted" style="margin:2px 0 0;max-width:68ch">네 분 모두 A형입니다. A형의 특징(신중함, 계획성)에 각자의 MBTI를 더해 정리했어요. 점수는 이 페이지의 계산값이고, 재미로 참고해 주세요.</p>
+    <div class="fgrid">
+      <article class="fcard"><h3>수현 <span class="chip mono">A형 · ISTP</span></h3>
+        <p class="fsub">장인형 · SP 그룹</p>
+        <dl><dt>A형이 더해진 모습</dt><dd>A형의 신중함이 즉흥성을 눌러서, 자유로워 보여도 마음속으로는 한 번 더 재 봅니다.</dd><dt>강점</dt><dd>침착함, 문제 해결력</dd><dt>조심할 점</dt><dd>속마음을 말하지 않고 혼자 삭이기 쉬워요.</dd></dl>
+        <button type="button" class="btn" data-fam="ISTP">상세 풀이 보기</button></article>
+      <article class="fcard"><h3>정현 <span class="chip mono">A형 · ESTP</span></h3>
+        <p class="fsub">사업가형 · SP 그룹</p>
+        <dl><dt>A형이 더해진 모습</dt><dd>행동은 빠르지만 A형 신중함이 브레이크 역할을 해서, 겉보다 계산이 꼼꼼합니다.</dd><dt>강점</dt><dd>순발력, 협상력</dd><dt>조심할 점</dt><dd>장기 계획에 약하고, 겉은 시원해도 속에 담아 둘 수 있어요.</dd></dl>
+        <button type="button" class="btn" data-fam="ESTP">상세 풀이 보기</button></article>
+      <article class="fcard"><h3>미화 <span class="chip mono">A형 · ISFJ</span></h3>
+        <p class="fsub">수호자형 · SJ 그룹</p>
+        <dl><dt>A형이 더해진 모습</dt><dd>A형과 만나 성실함이 두 배가 되어 맡은 일은 끝까지 해냅니다.</dd><dt>강점</dt><dd>세심함, 책임감</dd><dt>조심할 점</dt><dd>거절을 못해 부담이 쌓이고, 스스로에게 너무 엄격해요.</dd></dl>
+        <button type="button" class="btn" data-fam="ISFJ">상세 풀이 보기</button></article>
+      <article class="fcard"><h3>건교 <span class="chip mono">A형 · ESFJ</span></h3>
+        <p class="fsub">집정관형 · SJ 그룹</p>
+        <dl><dt>A형이 더해진 모습</dt><dd>A형의 배려가 더해져 가족의 분위기와 화합을 먼저 챙깁니다.</dd><dt>강점</dt><dd>배려, 협동심</dd><dt>조심할 점</dt><dd>남의 평가에 민감하고 마음의 여유가 부족해요.</dd></dl>
+        <button type="button" class="btn" data-fam="ESFJ">상세 풀이 보기</button></article>
+    </div>
+    <h3 style="margin-top:18px">가족 안에서 보이는 흐름</h3>
+    <ul>
+      <li><b>미화·건교 (SJ)</b> SJ는 책임감 있고 규칙을 지키는 &ldquo;지키는 사람&rdquo; 유형입니다. A형과 겹쳐 가정의 중심을 잡지만, 가장 지치기 쉬운 두 사람이에요.</li>
+      <li><b>수현·정현 (SP)</b> SP는 상황에 맞춰 바로 움직이는 &ldquo;즉흥적인 현실파&rdquo; 유형입니다. 둘 다 A형 신중함이 있어 겉보다 계획적이고, 말보다 행동으로 표현해요.</li>
+      <li><b>같은 글자 짝</b> 수현–정현은 S·T·P가 같아 대화가 잘 통하고, 미화–건교는 S·F·J가 같아 서로의 마음을 잘 이해합니다.</li>
+      <li><b>보완 관계</b> 서로 다른 점이 보완되는 조합은 &lsquo;미화–정현&rsquo;, &lsquo;건교–수현&rsquo;일 수 있어요. 다만 이 교차 조합은 출처로 확인하지 못했습니다.</li>
+      <li><b>공통 주의점</b> 네 분 모두 A형이라 &lsquo;스스로를 몰아붙임&rsquo;과 &lsquo;마음의 여유 부족&rsquo;이 겹칩니다. 서로 쉬어 가도록 챙겨 주는 것이 좋아요.</li>
+    </ul>
+    <p class="note">혈액형 성격론은 과학적으로 입증되지 않았고 MBTI도 검증 한계가 지적됩니다. 가족 대화의 소재로만 활용하세요.</p>
+  </details></section>
+
+  <section class="panel official evi" id="official" aria-labelledby="offH">
+    <h2 id="offH">공식 MBTI 검사 받는 방법</h2>
+    <p class="muted" style="margin:2px 0 0;max-width:68ch">공식 MBTI(Global Step I, 92문항)는 The Myers-Briggs Company가 저작권을 가진 유료 검사라 문항을 이 페이지에 넣을 수 없어요. 아래 방법으로 직접 받으신 뒤, 결과 유형을 이 페이지에서 골라 64조합 풀이를 보시면 됩니다.</p>
+    <div class="evi-grid">
+      <div>
+        <h3>받는 곳</h3>
+        <ul>
+          <li><b>온라인 개인 응시</b> MBTIonline.com에서 받아요. 화면 기준 미국 달러로 59.95달러이고, 검사와 &lsquo;최적 유형 확인&rsquo; 과정까지 약 45분이 걸린다고 안내돼 있어요. 4글자 유형, 유형 확인 과정, 유형 비교 도구가 포함돼요. (<a href="https://www.mbtionline.com/TaketheMBTI" target="_blank" rel="noopener">MBTIonline</a>)</li>
+          <li><b>인증 상담사와 함께</b> MBTI 인증 전문가(Certified Practitioner)가 직접 또는 화상으로 실시하고, 결과를 풀어 주는 면담이 함께 이뤄져요. 비밀 보장과 윤리적 사용을 약속하고, 모든 유형을 가치 있게 설명해요. (<a href="https://www.myersbriggs.org/my-mbti-personality-type/take-the-mbti-instrument/" target="_blank" rel="noopener">Myers &amp; Briggs Foundation</a>)</li>
+          <li><b>소속 기관·학교</b> 직장이나 학교가 인증 상담사를 통해 단체로 실시하는 경우도 있어요.</li>
+          <li><b>확인이 필요한 점</b> 한국어 지원 여부와 국내 인증 상담사 정보는 제가 확인하지 못했어요. 위 사이트나 해당 기관에 직접 문의해 주세요. 가격도 바뀔 수 있어요.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>공식 검사와 이 페이지 검사의 차이</h3>
+        <div class="tbl-wrap">
+          <table class="pt">
+            <thead><tr><th></th><th>공식(Global Step I)</th><th>이 페이지</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">문항</th><td>92문항</td><td>자체 40·96문항</td></tr>
+              <tr><th scope="row">결과 표시</th><td>같은 선호가 다시 나올 확률(50~100%)</td><td>축별 퍼센트 계산값</td></tr>
+              <tr><th scope="row">유형 확인</th><td>유형 확인 과정 제공</td><td>경계 축을 직접 선택</td></tr>
+              <tr><th scope="row">해석</th><td>인증 상담사 면담 가능</td><td>자동 설명</td></tr>
+              <tr><th scope="row">검증</th><td>출판사가 신뢰도·타당도 연구를 공개</td><td>검증 없음</td></tr>
+              <tr><th scope="row">비용</th><td>유료</td><td>무료</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">공식 검사도 심리학계에서 재검사 일관성과 타당도 비판을 받고 있어요. 위의 &lsquo;자료 점검&rsquo;을 함께 참고해 주세요. (<a href="https://www.psychometrics.com/wp-content/uploads/2022/01/MBTI_Global_Assessment_FAQ.pdf" target="_blank" rel="noopener">MBTI Global FAQ</a>)</p>
+        <button type="button" class="btn primary" data-go="pickSec" style="margin-top:8px">결과 유형 고르러 가기</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel bsec evi" id="bloodSec" aria-labelledby="bloodH">
+    <h2 id="bloodH">혈액형 자세히 보기</h2>
+    <p class="muted" style="margin:2px 0 0">&lsquo;속설&rsquo;은 재미용이고, &lsquo;의학적 사실&rsquo;은 수혈·유전 자료와 연구 기사를 바탕으로 정리했어요. 카드를 누르면 위의 결과가 바뀝니다.</p>
+    <p class="bswipe">‹ › 버튼을 눌러 A · B · O · AB형을 넘겨 보세요</p>
+    <div class="bgrid" id="bgrid"></div>
+
+    <div class="evi-grid">
+      <div>
+        <h3>한국과 일본의 혈액형 비율(%)</h3>
+        <div class="leg"><span><i style="background:var(--accent)"></i>한국</span><span><i style="background:var(--muted)"></i>일본</span></div>
+        <div id="bdist"></div>
+        <p class="note">한국은 2009년 기사, 일본은 여행 정보 사이트 기준이라 최신 값과 조금 다를 수 있어요. 일본은 다른 자료에서 A 40·O 30·B 20·AB 10%로 소개하기도 해요. (<a href="https://www.seoul.co.kr/news/2009/09/07/20090907024006" target="_blank" rel="noopener">서울신문</a>, <a href="https://www.japan-experience.com/plan-your-trip/to-know/understanding-japan/blood-type-in-japan" target="_blank" rel="noopener">Japan Experience</a>, <a href="https://www.tsunagujapan.com/what-your-blood-type-tells-about-you-in-japan/1000/" target="_blank" rel="noopener">Tsunagu Japan</a>)</p>
+      </div>
+      <div>
+        <details class="famd tri"><summary><h3>알아두면 좋은 사실</h3><span class="famh" aria-hidden="true">펼치기 / 숨기기</span></summary>
+        <ul>
+          <li><b>발견</b> 1901년 칼 란트슈타이너가 ABO 혈액형을 발견했고, 1930년 노벨 생리의학상을 받았어요. (<a href="https://weekly.khan.co.kr/article/16611" target="_blank" rel="noopener">주간경향</a>)</li>
+          <li><b>정체</b> 혈액형은 적혈구 표면의 당(탄수화물) 사슬 모양으로 정해져요. 500여 종이 확인됐고, 실제로 중요한 것은 20종 정도예요. 쓰임새는 수혈, 장기 이식, 산모와 태아의 혈액형 관리예요. (<a href="https://www.seoul.co.kr/news/2009/09/07/20090907024006" target="_blank" rel="noopener">서울신문</a>)</li>
+          <li><b>유전</b> ABO 혈액형은 9번 염색체의 유전자 한 곳에서 정해져요. A와 B는 O보다 강하게 나타나고(우성), A와 B가 함께 있으면 둘 다 나타나요(공우성). 성격은 여러 유전자가 관여한다고 추정돼요. (<a href="https://www.lifeblood.com.au/health-professionals/testing/blood-groups/ABO" target="_blank" rel="noopener">Lifeblood</a>, <a href="https://www.seoul.co.kr/news/2009/09/07/20090907024006" target="_blank" rel="noopener">서울신문</a>)</li>
+          <li><b>내 혈액형이 틀릴 수도</b> 입영 장병의 5.5%가 자기 혈액형을 잘못 알고 있었어요. 손가락 채혈 간이 검사는 적혈구만 보기 때문에 정확한 판정에는 혈청 검사까지 필요해요. (<a href="https://www.seoul.co.kr/news/2009/09/07/20090907024006" target="_blank" rel="noopener">서울신문</a>)</li>
+          <li><b>동아시아의 특징</b> AB형이 5~12%로 유럽(3~8%)보다 많고, Rh 음성(RhD 항원이 없는 혈액형)은 0.1~1%로 유럽(11~19%)보다 훨씬 드물어요. (<a href="https://medicaltimes.com/Mobile/News/NewsView.html?ID=1163731" target="_blank" rel="noopener">메디칼타임즈</a>)</li>
+          <li><b>나라마다 달라요</b> 영국은 O형이 47%, 프랑스는 A형이 47%, 베이징 지역은 B형이 32%로 가장 많아요. (<a href="https://weekly.khan.co.kr/article/16611" target="_blank" rel="noopener">주간경향</a>)</li>
+          <li><b>노미의 채소 비유</b> 혈액형 성격론을 퍼뜨린 노미 마사히코는 O형을 생야채(성격이 가장 다양), A형을 절임, B형을 삶은 채소, AB형을 복신절임에 빗댔어요. (<a href="https://en.wikipedia.org/wiki/Masahiko_Nomi" target="_blank" rel="noopener">Wikipedia</a>)</li>
+        </ul>
+        </details>
+      </div>
+    </div>
+
+    <details class="legend" style="margin-top:16px">
+      <summary>부모 혈액형으로 보는 자녀 혈액형</summary>
+      <div class="tbl-wrap">
+        <table class="pt">
+          <thead><tr><th>부모</th><th>나올 수 있는 자녀 혈액형</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">O × O</th><td>O</td></tr>
+            <tr><th scope="row">O × A</th><td>O 또는 A</td></tr>
+            <tr><th scope="row">O × B</th><td>O 또는 B</td></tr>
+            <tr><th scope="row">O × AB</th><td>A 또는 B</td></tr>
+            <tr><th scope="row">A × A</th><td>A 또는 O</td></tr>
+            <tr><th scope="row">A × B</th><td>O, A, B, AB 모두 가능</td></tr>
+            <tr><th scope="row">A × AB</th><td>A, B, AB</td></tr>
+            <tr><th scope="row">B × B</th><td>B 또는 O</td></tr>
+            <tr><th scope="row">B × AB</th><td>A, B, AB</td></tr>
+            <tr><th scope="row">AB × AB</th><td>A, B, AB</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">A형은 유전자 조합이 AA 또는 AO, B형은 BB 또는 BO이기 때문에 부모가 같은 A형이어도 O형 자녀가 나올 수 있어요. (<a href="https://www.lifeblood.com.au/health-professionals/testing/blood-groups/ABO" target="_blank" rel="noopener">Lifeblood</a>)</p>
+    </details>
+  </section>
+
+  <section class="panel heat" aria-label="64조합 지도">
+    <div class="heat-head">
+      <h2>64조합 지도</h2>
+      <p>칸을 누르면 위의 결과가 바뀝니다. 색이 진할수록 점수가 높아요.</p>
+    </div>
+    <div class="seg" id="seg" role="group" aria-label="보는 지표"></div>
+    <p id="metricHint"></p>
+    <div class="heat-body">
+      <div class="tbl-wrap"><table id="heat"></table></div>
+      <div class="ranks">
+        <h3>점수가 가장 높은 5조합 <span class="muted" style="font-weight:400">· ‹ › 버튼을 눌러 넘겨 보세요</span></h3><ol id="topList"></ol>
+        <h3>점수가 가장 낮은 5조합</h3><ol id="lowList"></ol>
+      </div>
+    </div>
+    <div class="selbar"><span class="selTxt"></span><button type="button" class="btn primary to-result">위에서 결과 보기</button></div>
+  </section>
+
+  <section class="panel evi evy" aria-labelledby="eviH">
+    <details class="famd"><summary><h2 id="eviH">자료 점검</h2><span class="famh" aria-hidden="true">펼치기 / 숨기기</span></summary>
+    <p class="muted" style="margin:2px 0 0">온라인 자료를 조사해 확인한 내용입니다. 항목 끝의 링크가 출처예요.</p>
+    <div class="evi-grid">
+      <div>
+        <h3>혈액형 성격론</h3>
+        <ul>
+          <li><b>기원</b> 1927년 후루카와 다케지의 논문에서 시작됐고, 1970년대 기자 노미 마사히코의 책으로 대중화됐어요. 초기 연구는 표본이 10~20명 수준이었다고 정리돼 있어요. (<a href="https://www.atlasobscura.com/articles/the-positive-and-negative-sides-of-japans-obsession-with-dating-by-blood-type" target="_blank" rel="noopener">Atlas Obscura</a>, <a href="https://en.wikipedia.org/wiki/Blood_type_personality_theory" target="_blank" rel="noopener">Wikipedia</a>)</li>
+          <li><b>한국 유행</b> 1990년대 말 들어와 2000년경 크게 퍼졌고, 박동선 작가의 혈액형 만화가 한몫했어요. (<a href="https://globalvoices.org/2011/08/16/south-korea-blood-type-personality-theory-how-it-works/print/" target="_blank" rel="noopener">Global Voices</a>)</li>
+          <li><b>대규모 검증</b> 일본·미국 무작위 표본 조사(약 1만 명)에서 성격 항목 68개 중 65개는 혈액형 집단 간 차이가 통계적으로 의미 없었어요. 효과 크기(혈액형이 성격 차이를 설명하는 비율)는 0.3% 미만이었어요. (<a href="https://pubmed.ncbi.nlm.nih.gov/25016835/" target="_blank" rel="noopener">PubMed, Nawata 2014</a>)</li>
+          <li><b>한국 연구</b> 문항별로는 차이가 보였지만 성격 5요인으로 묶으면 사라졌다고 정리돼 있어요. 원 논문은 직접 확인하지 못했어요. (<a href="https://en.wikipedia.org/wiki/Blood_type_personality_theory" target="_blank" rel="noopener">Wikipedia</a>)</li>
+          <li><b>의학계 입장</b> 혈액형 항원은 유전자로 정해지지만, 그 유전자가 성격까지 정하지는 않는다고 봐요. (<a href="https://m.go.seoul.co.kr/news/2017/10/23/20171023033005" target="_blank" rel="noopener">서울신문</a>)</li>
+          <li><b>왜 맞는 것 같을까</b> 막연하고 좋은 말은 누구에게나 들어맞는 것처럼 느끼는 바넘 효과, 맞는 사례만 기억하는 확증 편향 때문이에요. 1948년 포러의 실험에서 학생 39명은 똑같은 글을 &ldquo;내 얘기&rdquo;라며 평균 4.3점(5점 만점)을 줬어요. (<a href="https://nesslabs.com/barnum-effect" target="_blank" rel="noopener">Ness Labs</a>, <a href="https://www.sciencetimes.co.kr/news/인간은-4개의-알파벳만으로-설명되기-힘들다/?cat=130" target="_blank" rel="noopener">사이언스타임즈</a>)</li>
+          <li><b>한국인의 인식</b> 성인 1,501명 중 약 57%가 혈액형과 성격이 관련 있다고 답했고, 믿는 사람의 36%는 연애·결혼 상대를 고를 때 고려할 만하다고 했어요. (<a href="https://www.asiae.co.kr/en/article/2023101916004070046" target="_blank" rel="noopener">아시아경제</a>) 결혼정보회사 회원 519명 설문에서는 58.3%가 혈액형 선입견 때문에 이성을 멀리한 적이 있다고 했는데, 업체가 한 설문이라 참고용이에요. (<a href="https://www.khan.co.kr/article/200902271643171" target="_blank" rel="noopener">경향신문</a>)</li>
+          <li><b>다른 반박 근거</b> 타이완 고등학생 약 3,000명 연구(2005)에서도 혈액형과 성격은 무관했고, 일본 기업인 중 A형이 많은 것은 인구에서 A형이 많기 때문으로 설명돼요. (<a href="https://www.seoul.co.kr/news/2009/09/07/20090907024006" target="_blank" rel="noopener">서울신문</a>) 노미 마사히코 본인도 혈액형은 성격의 약 4분의 1만 설명한다고 말했어요. (<a href="https://en.wikipedia.org/wiki/Masahiko_Nomi" target="_blank" rel="noopener">Wikipedia</a>)</li>
+          <li><b>속설의 출처</b> 혈액형별 속설은 일본·한국의 대중 매체와 소개 글에서 가져왔고, 글마다 내용이 조금씩 달라요. (<a href="https://www.tsunagujapan.com/what-your-blood-type-tells-about-you-in-japan/1000/" target="_blank" rel="noopener">Tsunagu Japan</a>, <a href="https://www.japanesepod101.com/blog/?p=5557" target="_blank" rel="noopener">JapanesePod101</a>, <a href="https://lady.khan.co.kr/finance/article/5657" target="_blank" rel="noopener">레이디경향</a>)</li>
+          <li><b>건강과의 관계</b> 혈액형과 질병 위험의 통계적 관련은 있지만 차이가 작고 집단 통계라 개인에게 적용하기 어려워요. (<a href="https://medicine.tufts.edu/news-events/news/what-your-blood-type-can-tell-you-about-your-health" target="_blank" rel="noopener">Tufts 의대</a>)</li>
+          <li><b>부작용</b> 일본에서는 AB형과 B형을 편견으로 대하는 &lsquo;혈액형 하라스먼트&rsquo;가 문제가 된 적이 있어요. (<a href="https://www.atlasobscura.com/articles/the-positive-and-negative-sides-of-japans-obsession-with-dating-by-blood-type" target="_blank" rel="noopener">Atlas Obscura</a>)</li>
+        </ul>
+      </div>
+      <div>
+        <h3>MBTI</h3>
+        <ul>
+          <li><b>역사</b> 캐서린 브릭스가 1917년부터 성격을 연구했고, 1923년 융의 『심리 유형』 영문판을 본 뒤 딸 이저벨 마이어스와 2차 세계대전 중에 검사를 만들었어요. 지금 이름은 1956년에 붙었고, 두 사람은 심리학 전문가가 아니었어요. (<a href="https://en.wikipedia.org/wiki/Myers%E2%80%93Briggs_Type_Indicator" target="_blank" rel="noopener">Wikipedia</a>, <a href="https://www.themyersbriggs.com/en-US/Access-Resources/Articles/mbti-facts-common-criticisms" target="_blank" rel="noopener">출판사 해명</a>)</li>
+          <li><b>재검사 결과</b> 5주 안팎 뒤 다시 하면 39~76%가 다른 유형을 받았다는 연구가 있어요. 반면 출판사는 6~15주 간격에서 네 지표의 상관이 0.81~0.86으로 높다고 주장하고, 50% 수치는 오래된 구형 검사 기준이라고 반박해요. (<a href="https://sociotype.com/topics/systems/is-the-mbti-valid" target="_blank" rel="noopener">Sociotype</a>, <a href="https://www.themyersbriggs.com/en-US/Access-Resources/Articles/mbti-facts-common-criticisms" target="_blank" rel="noopener">출판사</a>)</li>
+          <li><b>타당성 평가</b> 1991년 미국 학술원 위원회는 내향·외향(I–E) 지표만 타당성이 강하다고 봤고, 점수가 양 끝이 아닌 가운데 근처에 몰린다는 비판도 있어요. (<a href="https://en.wikipedia.org/wiki/Myers%E2%80%93Briggs_Type_Indicator" target="_blank" rel="noopener">Wikipedia</a>)</li>
+          <li><b>성격 5요인과 비교</b> 1989년 연구에서 E/I는 외향성, S/N은 개방성, T/F는 친화성, J/P는 성실성과 대응했어요. 5요인에 있는 정서 불안정성(스트레스에 흔들리는 정도)은 MBTI에 없고, 5요인은 사람을 유형이 아니라 연속된 점수로 봐요. (<a href="https://en.wikipedia.org/wiki/Myers%E2%80%93Briggs_Type_Indicator" target="_blank" rel="noopener">Wikipedia</a>, <a href="https://sociotype.com/topics/systems/is-the-mbti-valid" target="_blank" rel="noopener">Sociotype</a>)</li>
+          <li><b>검사 방식</b> 공식 MBTI Global Step I은 92문항, Step II는 143문항이고, 결과를 &lsquo;같은 선호가 다시 나올 확률(50~100%)&rsquo;로 보여 줘요. 16Personalities도 축마다 퍼센트를 보여 주며, 50%에 가까울수록 그 성향이 약하고 재검사 때 달라질 수 있다고 안내해요. 퍼센트를 글자 하나로 줄이면 51%와 99%가 같은 글자가 된다는 비판도 있어요. (<a href="https://www.psychometrics.com/wp-content/uploads/2022/01/MBTI_Global_Assessment_FAQ.pdf" target="_blank" rel="noopener">MBTI Global FAQ</a>, <a href="https://16personalities.com/articles/strength-of-individual-traits" target="_blank" rel="noopener">16Personalities</a>, <a href="https://www.sdfi.co.kr/news/an-accuracy-review-of-the-16personalities-test.html" target="_blank" rel="noopener">SDFI 리뷰</a>)</li>
+          <li><b>직업·채용</b> 출판사도 채용·선발에 쓰는 것은 비윤리적이라 하고, 16유형이 거의 모든 직업에 있다고 밝혀요. (<a href="https://www.themyersbriggs.com/en-US/Access-Resources/Articles/mbti-facts-common-criticisms" target="_blank" rel="noopener">출판사</a>, <a href="https://www.myersbriggs.org/type-in-my-life/personality-type-and-careers/" target="_blank" rel="noopener">Myers &amp; Briggs Foundation</a>)</li>
+          <li><b>궁합</b> 출판사는 &ldquo;완벽한 짝은 없다&rdquo;고 하고, 네 글자가 모두 같은 부부는 약 10%라고 해요. 서울대병원 권준수 교수는 유형으로 사람을 성급히 판단하는 위험을 지적했어요. (<a href="https://www.psychometrics.com/?p=19861" target="_blank" rel="noopener">출판사 자료</a>, <a href="https://www.seoul.co.kr/news/newsView.php?id=20220809025010" target="_blank" rel="noopener">서울신문 칼럼</a>)</li>
+          <li><b>한국의 MBTI 열풍</b> 2021년 말 한국리서치 조사에서 성인의 52%, 18~29세의 90% 넘게 검사를 해 봤고, 경험자의 83%는 결과가 성격과 맞는다고 답했어요. 엠브레인 설문에서는 83%가 &ldquo;성급한 일반화가 걱정된다&rdquo;, 36.9%가 &ldquo;틀에 갇히는 게 싫다&rdquo;고 답했어요. (<a href="https://economist.co.kr/article/view/ecn202207160028" target="_blank" rel="noopener">이코노미스트</a>, <a href="https://www.asiae.co.kr/en/article/2023050816001086349" target="_blank" rel="noopener">아시아경제</a>)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sub">
+      <h3>MBTI 유형 분포 (온라인 자발 참여 표본)</h3>
+      <div class="dist" id="dist"></div>
+      <p class="note">무료 온라인 검사를 직접 선택한 39,944명의 결과이고, 국가·나이 정보가 없어 한국인이나 일반 인구의 분포로 볼 수 없어요. 다른 자료와 크게 다를 수 있어요. 막대를 누르면 해당 유형 결과가 열려요. (<a href="https://jobcannon.io/ko/research/distributions/mbti" target="_blank" rel="noopener">JobCannon</a>, 2026-09-29 추출)</p>
+    </div>
+
+    <details class="legend" style="margin-top:16px">
+      <summary>점수는 어떻게 계산했나요?</summary>
+      <ul>
+        <li>알파벳이 E, J, F, N이면 높게(70점대), I, P, T, S면 낮게(30점대) 시작해요. 이 연결은 MBTI와 성격 5요인의 대응을 확인한 1989년 연구를 참고했어요.</li>
+        <li>혈액형 보정(±2~12점)은 속설을 숫자로 옮긴 것이라 근거가 없어요. 재미용입니다.</li>
+        <li>&lsquo;마음의 여유&rsquo;는 5요인의 정서 불안정성을 흉내 낸 값인데, MBTI에는 이 항목이 없어서 글자 조합으로 임의 계산했어요.</li>
+      </ul>
+    </details>
+    <details class="legend">
+      <summary>용어 풀이</summary>
+      <ul>
+        <li><b>신뢰도</b> 같은 사람이 다시 검사해도 비슷한 결과가 나오는 정도.</li>
+        <li><b>타당도</b> 검사가 재려는 것을 실제로 재는 정도.</li>
+        <li><b>효과 크기</b> 차이가 통계적으로 있어도 실제로 얼마나 큰지 나타내는 값. 0.3% 미만이면 거의 설명하지 못한다는 뜻이에요.</li>
+        <li><b>바넘 효과</b> 누구에게나 맞는 막연한 말을 내 얘기로 받아들이는 현상.</li>
+        <li><b>확증 편향</b> 내 믿음에 맞는 사례만 기억하고 어긋나는 사례는 잊는 경향.</li>
+        <li><b>항원</b> 적혈구 표면에 붙어 있는 표지. A형은 A 항원, B형은 B 항원이 있어요.</li>
+        <li><b>항체</b> 혈장(혈액의 액체 부분) 속에서 자기에게 없는 항원을 공격하는 단백질. A형은 항B, B형은 항A, O형은 둘 다 갖고 있어요.</li>
+        <li><b>우성·공우성</b> 우성은 유전자 두 개 중 겉으로 드러나는 쪽, 공우성은 두 유전자가 모두 드러나는 것. AB형이 그 예예요.</li>
+        <li><b>RhD 음성</b> 적혈구에 RhD 항원이 없는 혈액형. 동양인에게는 매우 드물어요.</li>
+        <li><b>성격 5요인(Big Five)</b> 외향성, 개방성, 친화성, 성실성, 정서 불안정성을 연속된 점수로 재는 심리학계의 표준 모델.</li>
+      </ul>
+    </details>
+    </details>
+  </section>
+
+  <p class="foot">재미로 보는 도구입니다. 혈액형으로 성격을 알 수 있다는 근거는 과학적으로 확인되지 않았고, MBTI도 정식 진단 검사가 아니에요. 점수는 알파벳 조합으로 계산한 예시 값입니다.</p>
+</main>
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)};
+  var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var BL=[
+    {k:'A', adj:'꼼꼼한', kw:'신중', v:'--bA', mate:'O', off:[-4,10,6,-2,-10], str:'세심한 마무리', cau:'스스로를 너무 몰아붙이지 않기',
+     note:'A형은 신중하고 배려심이 깊으며 완벽을 추구한다고 알려져 있어요.'},
+    {k:'B', adj:'자유로운', kw:'자유', v:'--bB', mate:'AB', off:[2,-10,-4,8,6], str:'독창적인 집중력', cau:'내 속도에 남을 맞추려 하지 않기',
+     note:'B형은 자유롭고 호기심이 많으며 솔직하다고 알려져 있어요.'},
+    {k:'O', adj:'통 큰', kw:'사교', v:'--bO', mate:'A', off:[10,0,2,-2,12], str:'사람을 모으는 친화력', cau:'자신감이 고집으로 보이지 않게 하기',
+     note:'O형은 사교적이고 낙천적이며 리더십이 있다고 알려져 있어요.'},
+    {k:'AB', adj:'독특한', kw:'개성', v:'--bAB', mate:'B', off:[-2,-4,-2,10,-2], str:'냉정한 판단력', cau:'속마음을 가끔은 말로 꺼내기',
+     note:'AB형은 이성적이고 독특하며 개성이 강하다고 알려져 있어요.'}
+  ];
+
+  var GROUPS=[['NT','분석형','직관+사고'],['NF','감성형','직관+감정'],['SJ','관리형','감각+판단'],['SP','탐험형','감각+인식']];
+
+  var MB=[
+    {c:'INTJ',g:'NT',n:'전략가',mate:'ENFP',core:'장기 계획과 논리로 판을 짜는 사람입니다.',str:'목표를 설계하는 힘, 독립적인 판단',cau:'남에게도 기대가 높아 차갑게 보일 수 있어요.',job:'연구원, 기획자, 개발자'},
+    {c:'INTP',g:'NT',n:'논리술사',mate:'ENTJ',core:'원리가 궁금해서 끝까지 파고드는 사람입니다.',str:'깊은 분석, 새로운 아이디어',cau:'시작은 많은데 마무리가 늦어질 수 있어요.',job:'연구원, 프로그래머, 데이터 분석가'},
+    {c:'ENTJ',g:'NT',n:'통솔자',mate:'INTP',core:'목표를 정하고 사람들을 이끄는 리더입니다.',str:'추진력, 빠른 결단',cau:'속도가 다른 사람을 몰아붙일 수 있어요.',job:'경영자, 컨설턴트, 창업가'},
+    {c:'ENTP',g:'NT',n:'변론가',mate:'INFJ',core:'토론과 새로운 아이디어를 즐기는 사람입니다.',str:'발상력, 말솜씨',cau:'반대를 위한 반대로 보일 때가 있어요.',job:'기획자, 마케터, 창업가'},
+    {c:'INFJ',g:'NF',n:'옹호자',mate:'ENTP',core:'조용하지만 신념이 깊고 사람 마음을 잘 읽습니다.',str:'통찰력, 깊은 배려',cau:'혼자 다 떠안고 지칠 수 있어요.',job:'상담사, 교사, 작가'},
+    {c:'INFP',g:'NF',n:'중재자',mate:'ENFJ',core:'가치관이 뚜렷한 감성적인 이상주의자입니다.',str:'공감 능력, 창의성',cau:'상처받으면 오래 마음에 담아 둬요.',job:'작가, 디자이너, 상담사'},
+    {c:'ENFJ',g:'NF',n:'선도자',mate:'INFP',core:'사람을 성장시키는 따뜻한 리더입니다.',str:'소통 능력, 동기 부여',cau:'남을 챙기다 자신이 소진될 수 있어요.',job:'교사, 인사 담당자, 강사'},
+    {c:'ENFP',g:'NF',n:'활동가',mate:'INTJ',core:'호기심이 많고 에너지가 넘치는 분위기 메이커입니다.',str:'열정, 사람을 이어 주는 힘',cau:'흥미가 식으면 중도에 놓기 쉬워요.',job:'광고·홍보, 콘텐츠 제작, 이벤트 기획'},
+    {c:'ISTJ',g:'SJ',n:'현실주의자',mate:'ESFP',core:'규칙과 책임을 지키는 믿음직한 사람입니다.',str:'성실함, 정확함',cau:'변화에 적응하는 데 시간이 걸려요.',job:'회계사, 공무원, 관리직'},
+    {c:'ISFJ',g:'SJ',n:'수호자',mate:'ESTP',core:'조용히 곁을 챙기는 헌신형입니다.',str:'세심함, 책임감',cau:'거절을 잘 못해서 부담이 쌓여요.',job:'간호사, 교사, 사무직'},
+    {c:'ESTJ',g:'SJ',n:'경영자',mate:'ISFP',core:'질서와 효율로 일을 굴리는 관리자입니다.',str:'조직력, 실행력',cau:'융통성이 부족해 보일 수 있어요.',job:'관리자, 공직, 운영 담당'},
+    {c:'ESFJ',g:'SJ',n:'집정관',mate:'ISTP',core:'주변을 챙기고 화합을 만드는 사교가입니다.',str:'배려, 협동심',cau:'남의 평가에 민감해요.',job:'서비스직, 교육, 행사 진행'},
+    {c:'ISTP',g:'SP',n:'장인',mate:'ESFJ',core:'직접 해 보며 문제를 푸는 실용가입니다.',str:'침착함, 문제 해결력',cau:'속마음을 잘 표현하지 않아요.',job:'엔지니어, 정비사, 개발자'},
+    {c:'ISFP',g:'SP',n:'모험가',mate:'ESTJ',core:'감각적이고 자유로운 예술가 기질입니다.',str:'감수성, 유연함',cau:'갈등이 생기면 피하려 해요.',job:'디자이너, 요리사, 사진작가'},
+    {c:'ESTP',g:'SP',n:'사업가',mate:'ISFJ',core:'바로 행동으로 옮기는 승부사입니다.',str:'순발력, 협상력',cau:'장기 계획에는 약한 편이에요.',job:'영업, 창업, 현장 관리'},
+    {c:'ESFP',g:'SP',n:'연예인',mate:'ISTJ',core:'지금 이 순간을 즐기는 분위기 메이커입니다.',str:'친화력, 표현력',cau:'지출과 일정 관리가 느슨해질 수 있어요.',job:'방송인, 서비스직, 이벤트 진행'}
+  ];
+
+  var TW={
+    A:{NT:'A형의 신중함이 더해져 계획이 촘촘하고 실수가 적은 대신, 완벽하지 않으면 시작을 미루기 쉽습니다.',
+       NF:'A형의 섬세함이 더해져 남의 기분을 먼저 살피고, 속으로 삭이다 지치기 쉽습니다.',
+       SJ:'A형과 만나 성실함이 두 배가 되어 맡은 일은 끝까지 해내지만, 스스로에게 너무 엄격합니다.',
+       SP:'A형의 신중함이 즉흥성을 눌러서, 자유로워 보여도 마음속으로는 한 번 더 재 봅니다.'},
+    B:{NT:'B형의 자유로움이 더해져 생각이 틀에 갇히지 않고, 한 번 꽂히면 놀라운 집중력을 보입니다.',
+       NF:'B형의 솔직함이 더해져 감정 표현이 분명하고, 좋고 싫음이 얼굴에 바로 드러납니다.',
+       SJ:'B형과 만나 원칙은 지키되 자기 방식대로 하려는 고집이 있고, 의외로 유연한 순간도 있습니다.',
+       SP:'B형의 자유로움이 더해져 구속을 가장 싫어하는 조합입니다. 하고 싶은 일엔 바로 움직입니다.'},
+    O:{NT:'O형의 추진력이 더해져 아이디어를 말로 끝내지 않고 사람을 모아 실행합니다.',
+       NF:'O형의 친화력이 더해져 사람을 모으는 힘이 크고, 주변에 늘 사람이 모입니다.',
+       SJ:'O형의 현실감이 더해져 믿음직한 리더 타입이 되고, 팀의 중심 역할을 맡기 쉽습니다.',
+       SP:'O형의 낙천성이 더해져 어디서든 분위기를 풀고, 위기에도 크게 흔들리지 않습니다.'},
+    AB:{NT:'AB형의 이성적인 면이 더해져 감정과 논리를 따로 떼어 보는 독특한 시각이 있습니다.',
+        NF:'AB형의 독특함이 더해져 다정하다가도 갑자기 거리를 두는, 속을 알기 어려운 매력이 있습니다.',
+        SJ:'AB형과 만나 겉은 규칙적이지만 속은 엉뚱한 면이 있는, 반전 매력의 조합입니다.',
+        SP:'AB형의 호기심이 더해져 관심사가 넓고, 이것저것 경험하며 자기만의 취향을 만듭니다.'}
+  };
+
+  var LET={
+    E:['외향','사람 속에서 힘을 얻어요'], I:['내향','혼자 있을 때 힘을 얻어요'],
+    S:['감각','눈앞의 사실과 경험을 중시해요'], N:['직관','가능성과 전체 그림을 중시해요'],
+    T:['사고','논리로 판단해요'], F:['감정','사람과 관계를 먼저 살펴요'],
+    J:['판단','계획대로 정리해 두는 편이에요'], P:['인식','상황에 맞춰 유연하게 움직여요']
+  };
+
+  var METRICS=[
+    ['사교성','사람들과 어울리며 에너지를 얻는 정도'],
+    ['계획성','미리 계획하고 정리해 두는 정도'],
+    ['공감력','남의 감정을 먼저 살피는 정도'],
+    ['상상력','새로운 아이디어와 가능성을 떠올리는 정도'],
+    ['마음의 여유','스트레스를 받아도 느긋하게 넘기는 정도']
+  ];
+
+  function clamp(v){return Math.max(5,Math.min(98,v))}
+  function calc(b,m){
+    var c=m.c, E=c[0]==='E', N=c[1]==='N', T=c[2]==='T', J=c[3]==='J', S=!N, F=!T, P=!J, I=!E;
+    var s0=(E?72:32)+(F?3:0)+(P?2:0);
+    var s1=(J?72:34)+(T?4:0)+(S?2:0);
+    var s2=(F?72:36)+(J?3:0)+(I?2:0);
+    var s3=(N?72:36)+(P?4:0)+(I?2:0);
+    var s4=50+(T?6:-2)+(P?6:0)+(E?4:0)+(S?2:0);
+    var base=[s0,s1,s2,s3,s4];
+    return base.map(function(v,i){return clamp(v+b.off[i])});
+  }
+
+  /* 인지기능 순서: Wikipedia 'Jungian cognitive functions'의 Myers 표 기준 */
+  var FNLAB=['주기능','부기능','3차','열등'];
+  var FN={INTJ:['Ni','Te','Fi','Se'],INTP:['Ti','Ne','Si','Fe'],ENTJ:['Te','Ni','Se','Fi'],ENTP:['Ne','Ti','Fe','Si'],
+    INFJ:['Ni','Fe','Ti','Se'],INFP:['Fi','Ne','Si','Te'],ENFJ:['Fe','Ni','Se','Ti'],ENFP:['Ne','Fi','Te','Si'],
+    ISTJ:['Si','Te','Fi','Ne'],ISFJ:['Si','Fe','Ti','Ne'],ESTJ:['Te','Si','Ne','Fi'],ESFJ:['Fe','Si','Ne','Ti'],
+    ISTP:['Ti','Se','Ni','Fe'],ISFP:['Fi','Se','Ni','Te'],ESTP:['Se','Ti','Fe','Ni'],ESFP:['Se','Fi','Te','Ni']};
+  var FNN={
+    Se:['외향 감각','지금 눈앞의 경험을 생생하게 받아들여요'],
+    Si:['내향 감각','과거 경험과 비교하며 꼼꼼히 기억해요'],
+    Ne:['외향 직관','가능성을 여러 갈래로 펼쳐요'],
+    Ni:['내향 직관','여러 정보를 하나의 큰 흐름으로 묶어요'],
+    Te:['외향 사고','바깥 사실과 체계를 효율적으로 정리해요'],
+    Ti:['내향 사고','자기 안의 논리 원칙으로 분석해요'],
+    Fe:['외향 감정','분위기와 조화, 공동의 가치를 살펴요'],
+    Fi:['내향 감정','나만의 가치와 진정성을 지켜요']
+  };
+  /* 링글플러스 MBTI 궁합 자료에 나온 4쌍 */
+  var MATE={ENTJ:'INFP',INFP:'ENTJ',INFJ:'ENFP',ENFP:'INFJ',ESTJ:'ISFP',ISFP:'ESTJ',ISTJ:'ESFP',ESFP:'ISTJ'};
+  /* JobCannon 온라인 자발 참여 표본(n=39,944, 2026-09-29 추출) */
+  var DIST=[['ISTJ',24.7],['INFP',9.5],['ISFJ',9.1],['ISTP',8.1],['ESTJ',8.0],['INTP',6.9],['INTJ',5.4],['ISFP',4.9],
+    ['INFJ',4.6],['ENFP',4.5],['ESFJ',3.3],['ENTP',3.0],['ESTP',2.8],['ESFP',1.9],['ENFJ',1.7],['ENTJ',1.6]];
+
+  /* 혈액형 속설 프로필: Tsunagu Japan, JapanesePod101, 레이디경향, 아시아경제(선호도) 기준 */
+  /* 의학 정보: Lifeblood, Britannica, Tufts, 서울신문, 주간경향 기준 */
+  var BP=[
+    {nick:'농부형', up:['배려심','책임감','신중함','성실함','시간 약속을 잘 지킴','팀워크'],
+     down:['소심·수줍음','보수적','고집','걱정이 많음','완벽주의','거절을 잘 못함'],
+     work:'팀 안에서 성실하게 일하는 타입으로 그려져요. 겉으로는 친절하지만 감정을 잘 숨기고, 잠귀가 밝고 음식이 까다롭다는 말도 있어요.',
+     mate:'잘 맞는 편: O형, A형 · 안 맞는 편: B형', like:19,
+     ag:'A', ab:'항B', gt:'AA, AO', get:'A, O', give:'A, AB', kr:34, jp:38,
+     health:'위암 일부(헬리코박터균 감염이 더 흔함)와 혈전, 60세 이전 뇌졸중이 O형보다 약간 많다는 연구가 있어요.'},
+    {nick:'사냥꾼형', up:['창의력','자유로움','유머','적응력','독립심','낙천적'],
+     down:['무책임해 보임','자기중심적','변덕','충동적','규칙을 잘 안 지킴'],
+     work:'유연하게 생각하지만 팀워크는 약하다고 그려져요. &ldquo;B형 남자는 바람둥이&rdquo;라는 속설이 유명하지만 근거는 없어요.',
+     mate:'잘 맞는 편: AB형, O형 · 안 맞는 편: A형', like:12,
+     ag:'B', ab:'항A', gt:'BB, BO', get:'B, O', give:'B, AB', kr:27, jp:22,
+     health:'A형·AB형과 마찬가지로 심근경색과 혈전 위험이 O형보다 약간 높다는 연구가 있어요.'},
+    {nick:'전사형', up:['자신감','목표 의식','야망','에너지','의리','리더십','결단력'],
+     down:['둔감함','오만함','질투','말다툼에서 격해짐','낯선 사람에게 차가움'],
+     work:'야망 있고 리더 역할을 맡는 타입으로 그려져요. 겉으로는 감정이 안정돼 보여도 속은 예민하고 거절을 두려워한다는 해석도 있어요.',
+     mate:'잘 맞는 편: A형, B형 · 안 맞는 편: AB형', like:49,
+     ag:'없음', ab:'항A, 항B', gt:'OO', get:'O', give:'모든 혈액형', kr:28, jp:30,
+     health:'심근경색 위험이 상대적으로 낮고 말라리아 중증에는 보호 효과가 있다는 연구가 있어요. 모기는 O형을 더 문다는 보고도 있고, 콜레라에는 취약했다는 1980년대 연구도 있어요.'},
+    {nick:'인도주의자형', up:['차분함','이성적','사교적','정리를 잘함','공감','믿음직함'],
+     down:['우유부단','예민함','쉽게 용서하지 않음','속을 알기 어려움','기분이 자주 바뀜'],
+     work:'분류하기 어려운 유형이라고 하고, &ldquo;천재 아니면 바보&rdquo;라는 말도 있어요. 감정과 논리를 따로 보는 편이라고 해요.',
+     mate:'잘 맞는 편: AB형, B형 · 안 맞는 편: O형', like:6,
+     ag:'A와 B 모두', ab:'없음', gt:'AB', get:'모든 혈액형', give:'AB', kr:11, jp:10,
+     health:'심근경색 위험이 가장 높은 편이라는 연구가 있고 혈전 질환도 O형보다 많아요. 콜레라 저항성은 가장 강했다는 1980년대 연구가 있어요.'}
+  ];
+
+  var SC=BL.map(function(b){return MB.map(function(m){return calc(b,m)})});
+  var st={b:0,m:4,metric:0};
+
+  function bIdx(k){for(var i=0;i<BL.length;i++){if(BL[i].k===k)return i}return 0}
+  function mIdx(c){for(var i=0;i<MB.length;i++){if(MB[i].c===c)return i}return 0}
+
+  /* ---------- 선택 패널 ---------- */
+  function buildPick(){
+    $('#bloods').innerHTML=BL.map(function(b,i){
+      return '<button type="button" class="bl" data-pb="'+i+'" aria-pressed="false" aria-label="'+b.k+'형">'+
+        '<span class="l" style="color:var(var('+b.v+'))"></span>'+
+        '<span class="s">'+b.kw+'</span></button>';
+    }).join('');
+    $$('#bloods .bl').forEach(function(btn,i){
+      var l=btn.querySelector('.l'); l.textContent=BL[i].k; l.style.color='var('+BL[i].v+')';
+    });
+    $('#types').innerHTML=GROUPS.map(function(g){
+      var items=MB.map(function(m,i){return {m:m,i:i}}).filter(function(o){return o.m.g===g[0]});
+      return '<div class="grp"><h3>'+g[1]+' · '+g[2]+'('+g[0]+')</h3><div class="types">'+
+        items.map(function(o){
+          return '<button type="button" class="tp" data-pm="'+o.i+'" aria-pressed="false"><span class="c">'+o.m.c+'</span><span class="n">'+o.m.n+'</span></button>';
+        }).join('')+'</div></div>';
+    }).join('');
+  }
+
+  function sync(){
+    $$('.bl').forEach(function(el){el.setAttribute('aria-pressed',String(+el.dataset.pb===st.b))});
+    $$('.tp').forEach(function(el){el.setAttribute('aria-pressed',String(+el.dataset.pm===st.m))});
+    $$('.bc').forEach(function(el){el.setAttribute('aria-current',String(+el.dataset.bc===st.b))});
+    $$('#heat td button').forEach(function(el){
+      el.setAttribute('aria-current',String(+el.dataset.cb===st.b&&+el.dataset.cm===st.m));
+    });
+    var b=BL[st.b], m=MB[st.m];
+    $('#bloodNote').textContent=b.note;
+    $$('.selTxt').forEach(function(el){el.textContent='선택: '+b.k+'형 × '+m.c+' · '+b.adj+' '+m.n});
+  }
+
+  /* ---------- 결과 카드 ---------- */
+  function renderResult(){
+    var b=BL[st.b], m=MB[st.m], s=SC[st.b][st.m];
+    var letters=m.c.split('').map(function(ch){
+      return '<div class="lt"><b>'+ch+'</b>'+LET[ch][0]+'<br><span class="muted">'+LET[ch][1]+'</span></div>';
+    }).join('');
+    var bars=METRICS.map(function(mt,i){
+      return '<div class="bar"><div class="row"><span class="nm">'+mt[0]+'</span><span class="val">'+s[i]+'</span></div>'+
+        '<div class="hint">'+mt[1]+'</div><div class="track"><div class="fill" style="--w:'+s[i]+'%"></div></div></div>';
+    }).join('');
+    var fnRows=FN[m.c].map(function(f,i){
+      return '<li><b>'+FNLAB[i]+'</b><span class="fn-code">'+f+'</span><span>'+FNN[f][0]+'</span><span class="muted">'+FNN[f][1]+'</span></li>';
+    }).join('');
+    var mateC=MATE[m.c], mateHtml;
+    if(mateC){
+      mateHtml='<button type="button" class="btn" data-cb="'+st.b+'" data-cm="'+mIdx(mateC)+'">'+mateC+' ('+MB[mIdx(mateC)].n+')</button>'+
+        '<div class="muted small" style="margin-top:4px">한 MBTI 자료에서 잘 맞는다고 소개한 짝이에요. 검사 출판사는 "완벽한 짝은 없다"고 설명해요.</div>';
+    }else{
+      mateHtml='<span class="muted">조사한 자료에는 이 유형의 짝이 따로 정리돼 있지 않아요.</span>'+
+        '<div class="muted small" style="margin-top:4px">검사 출판사는 어떤 짝이 더 잘 맞는다고 말하지 않고, 서로의 차이를 이해하는 노력이 더 중요하다고 설명해요.</div>';
+    }
+    $('#result').innerHTML=
+      '<div class="chips"><span class="chip"><i style="--c:var('+b.v+')"></i>'+b.k+'형</span>'+
+      '<span class="chip mono">'+m.c+'</span><span class="chip">'+m.n+'</span></div>'+
+      '<h2 class="title">'+b.adj+' '+m.n+'</h2>'+
+      '<p class="sum">'+m.core+' '+TW[b.k][m.g]+'</p>'+
+      '<p class="note">혈액형 부분은 대중에게 알려진 속설이고, 유형 설명은 널리 소개되는 내용을 간추린 참고용이에요.</p>'+
+      '<div class="letters">'+letters+'</div>'+
+      '<div class="bars">'+bars+'</div>'+
+      '<dl class="facts">'+
+        '<dt>강점</dt><dd>'+m.str+', '+b.str+'</dd>'+
+        '<dt>조심할 점</dt><dd>'+m.cau+'<br>'+b.cau+'.</dd>'+
+        '<dt>예시 직업</dt><dd>'+m.job+'<div class="muted small" style="margin-top:4px">참고용이에요. 유형이 적성을 정하지는 않고, 16유형이 거의 모든 직업에 고르게 있다고 검사 출판사도 밝히고 있어요.</div></dd>'+
+        '<dt>마음의 작동 순서</dt><dd><ul class="fnlist">'+fnRows+'</ul>'+
+        '<div class="muted small" style="margin-top:4px">융의 이론에서 말하는 8가지 정보 처리 방식(인지기능)이에요. 앞쪽일수록 더 자주, 더 편하게 쓴다고 보지만, 이 순서가 실제로 확인됐는지는 학계에서 논쟁 중이에요.</div></dd>'+
+        '<dt>혈액형 속설</dt><dd><b>장점</b> '+BP[st.b].up.slice(0,4).join(', ')+'<br><b>단점</b> '+BP[st.b].down.slice(0,3).join(', ')+
+          '<div class="muted small" style="margin-top:4px">근거 없는 속설이에요.</div>'+
+          '<button type="button" class="btn" data-go="bloodSec" style="margin-top:6px">'+b.k+'형 자세히 보기</button></dd>'+
+        '<dt>혈액형 궁합 속설</dt><dd>'+BP[st.b].mate+'<div class="muted small" style="margin-top:4px">일본 소개 자료 한 곳 기준이고 과학적 근거는 없어요.</div></dd>'+
+        '<dt>MBTI 궁합</dt><dd>'+mateHtml+'</dd>'+
+      '</dl>';
+  }
+
+  /* ---------- 64조합 지도 ---------- */
+  function buildSeg(){
+    $('#seg').innerHTML=METRICS.map(function(mt,i){
+      return '<button type="button" data-metric="'+i+'" aria-pressed="'+(i===st.metric)+'">'+mt[0]+'</button>';
+    }).join('');
+  }
+
+  function renderHeat(){
+    var k=st.metric, min=999, max=-1, all=[];
+    BL.forEach(function(b,bi){MB.forEach(function(m,mi){
+      var v=SC[bi][mi][k]; if(v<min)min=v; if(v>max)max=v; all.push({b:bi,m:mi,v:v});
+    })});
+    var span=Math.max(1,max-min);
+    var head='<thead><tr><th></th>'+BL.map(function(b){return '<th scope="col"><span style="color:var('+b.v+')">'+b.k+'</span></th>'}).join('')+'</tr></thead>';
+    var rows=MB.map(function(m,mi){
+      var cells=BL.map(function(b,bi){
+        var v=SC[bi][mi][k], pct=Math.round(8+(v-min)/span*47);
+        return '<td><button type="button" data-cb="'+bi+'" data-cm="'+mi+'" style="--m:'+pct+'%" aria-label="'+b.k+'형 '+m.c+' '+METRICS[k][0]+' '+v+'점">'+v+'</button></td>';
+      }).join('');
+      return '<tr><th scope="row" class="rh"><span class="c">'+m.c+'</span><span class="n">'+m.n+'</span></th>'+cells+'</tr>';
+    }).join('');
+    $('#heat').innerHTML=head+'<tbody>'+rows+'</tbody>';
+    $('#metricHint').textContent=METRICS[k][0]+': '+METRICS[k][1];
+
+    var sorted=all.slice().sort(function(a,b){return b.v-a.v||a.b-b.b||a.m-b.m});
+    function li(o){
+      var b=BL[o.b], m=MB[o.m];
+      return '<li><button type="button" data-cb="'+o.b+'" data-cm="'+o.m+'"><span class="dot" style="background:var('+b.v+')"></span>'+
+        '<span class="nm">'+b.k+'형 '+m.c+' · '+b.adj+' '+m.n+'</span><span class="v">'+o.v+'</span></button></li>';
+    }
+    $('#topList').innerHTML=sorted.slice(0,5).map(li).join('');
+    $('#lowList').innerHTML=sorted.slice(-5).reverse().map(li).join('');
+    sync();
+  }
+
+  /* ---------- MBTI 정밀 검사 (자체 문항 96개, 축당 24개, 양쪽 방향 12개씩) ---------- */
+  var AXES=[['E','I','외향','내향'],['S','N','감각','직관'],['T','F','사고','감정'],['J','P','판단','인식']];
+  var RAW=[
+    [['처음 만난 사람에게도 먼저 말을 거는 편이다.','E'],['사람이 많은 모임이 끝나면 혼자 쉬는 시간이 꼭 필요하다.','I'],
+     ['생각은 말하면서 정리되는 경우가 많다.','E'],['말하기 전에 머릿속으로 충분히 정리해 두는 편이다.','I'],
+     ['약속이 많은 주말이 오히려 힘이 난다.','E'],['소수의 가까운 사람과 깊게 이야기하는 쪽이 더 편하다.','I'],
+     ['낯선 모임에서도 금방 분위기에 적응한다.','E'],['전화보다 문자나 메신저가 편하다.','I'],
+     ['혼자 오래 있으면 답답하고 사람이 그리워진다.','E'],['혼자 보내는 시간이 길어도 지루하지 않다.','I'],
+     ['여러 사람 앞에서 이야기하는 것이 크게 부담스럽지 않다.','E'],['주목받는 자리에서는 긴장해서 평소보다 말이 줄어든다.','I'],
+     ['새로운 사람을 소개받는 일이 기대된다.','E'],['친해지는 데 시간이 걸리지만 한번 친해지면 오래간다.','I'],
+     ['대화를 먼저 이끌어 가는 일이 많다.','E'],['말하는 쪽보다 듣는 쪽이 더 편하다.','I'],
+     ['활동적이고 사람이 많은 장소에서 에너지를 얻는다.','E'],['조용한 공간에서 집중이 가장 잘 된다.','I'],
+     ['생각나면 바로 말이나 행동으로 옮기는 편이다.','E'],['감정이나 생각을 겉으로 잘 드러내지 않는다.','I'],
+     ['모임에서 먼저 분위기를 띄우는 역할을 맡곤 한다.','E'],['하루 일정에 혼자 있는 시간이 없으면 쉽게 지친다.','I'],
+     ['처음 보는 사람과도 어색하지 않게 긴 대화를 이어 간다.','E'],['친한 사람 몇 명과 조용히 보내는 저녁이 가장 좋다.','I']],
+    [['설명을 들을 때 구체적인 예시와 사실이 있어야 이해가 쉽다.','S'],['전체 그림이나 숨은 의미를 먼저 떠올리는 편이다.','N'],
+     ['이미 검증된 방법을 따르는 것이 안심된다.','S'],['같은 일을 반복하면 새로운 방식을 시도하고 싶어진다.','N'],
+     ['지금 눈앞의 현실적인 문제를 해결하는 데 강하다.','S'],['앞으로 어떻게 될지 가능성을 상상하는 일이 많다.','N'],
+     ['맛, 소리, 색처럼 감각으로 느낀 세부 사항을 잘 기억한다.','S'],['사물을 보면 다른 것에 빗대거나 연결 짓는 생각이 자주 든다.','N'],
+     ['이야기할 때 있었던 일을 순서대로 구체적으로 설명한다.','S'],['이야기하다 보면 주제가 이리저리 뻗어 나간다.','N'],
+     ['직접 경험해 본 것을 더 믿는다.','S'],['아직 없는 새로운 아이디어를 떠올리는 것이 즐겁다.','N'],
+     ['일할 때 매뉴얼이나 절차가 있으면 편하다.','S'],['규칙이나 틀을 바꿔 보고 싶은 생각이 자주 든다.','N'],
+     ['현실적이고 실용적인 것을 중요하게 여긴다.','S'],['의미, 상징, 철학적인 주제에 끌린다.','N'],
+     ['세부 사항의 오류를 잘 발견한다.','S'],['세부보다 큰 흐름과 방향이 더 중요하다고 느낀다.','N'],
+     ['꿈 같은 이야기보다 현실적인 계획이 더 와닿는다.','S'],['직감이 맞았던 경험이 많아서 직감을 따르는 편이다.','N'],
+     ['사실과 숫자로 확인된 정보를 더 신뢰한다.','S'],['이야기 속의 숨은 의미나 비유를 찾아내는 것이 즐겁다.','N'],
+     ['새로운 것을 배울 때 직접 해 보면서 익히는 편이다.','S'],['현재보다 미래의 가능성을 생각할 때 더 신이 난다.','N']],
+    [['결정할 때 감정보다 논리와 효율을 앞세운다.','T'],['결정할 때 주변 사람들이 어떻게 느낄지 먼저 생각한다.','F'],
+     ['친구가 고민을 말하면 해결 방법부터 떠오른다.','T'],['친구가 고민을 말하면 먼저 마음을 알아주고 싶다.','F'],
+     ['옳고 그름을 따지는 일이 불편하지 않다.','T'],['갈등이 생기면 관계가 상할까 봐 신경이 많이 쓰인다.','F'],
+     ['상대가 실수하면 바로 짚어 주는 것이 도움이라고 생각한다.','T'],['말할 때 상대가 상처받지 않을지 한 번 더 생각한다.','F'],
+     ['공정함과 원칙이 배려보다 중요할 때가 있다.','T'],['원칙보다 사람의 사정을 봐주는 것이 더 낫다고 느낀다.','F'],
+     ['토론에서 논리가 약한 부분이 눈에 잘 띈다.','T'],['다른 사람의 감정 변화를 쉽게 알아챈다.','F'],
+     ['감정적으로 힘들어도 일은 냉정하게 처리하는 편이다.','T'],['누군가 힘들어하면 내 일처럼 마음이 쓰인다.','F'],
+     ['칭찬보다 정확한 평가를 받는 것이 더 도움이 된다.','T'],['따뜻하고 배려 깊다는 말을 들으면 기쁘다.','F'],
+     ['객관적인 사실과 데이터를 근거로 판단한다.','T'],['조화로운 분위기를 지키는 것이 중요하다고 생각한다.','F'],
+     ['감정에 휘둘리지 않는 편이라고 생각한다.','T'],['영화나 이야기에 쉽게 감정이입해서 눈물이 나기도 한다.','F'],
+     ['논쟁에서 감정이 상하더라도 사실관계는 분명히 따져야 한다고 생각한다.','T'],['상대의 기분을 상하게 할 것 같으면 솔직한 의견도 부드럽게 바꿔 말한다.','F'],
+     ['일을 맡길 사람을 고를 때 친밀함보다 능력을 기준으로 삼는다.','T'],['다른 사람이 인정받지 못하면 내가 겪은 일처럼 속상하다.','F']],
+    [['여행이나 일정은 미리 계획해 두어야 마음이 편하다.','J'],['계획 없이 그때그때 상황에 맞춰 움직이는 것이 더 즐겁다.','P'],
+     ['해야 할 일은 마감보다 훨씬 일찍 끝내는 편이다.','J'],['마감이 가까워져야 집중이 잘 된다.','P'],
+     ['물건이나 책상이 정리되어 있어야 편하다.','J'],['어질러져 있어도 어디에 뭐가 있는지는 안다.','P'],
+     ['약속 시간보다 일찍 도착하는 편이다.','J'],['약속 시간에 아슬아슬하게 도착할 때가 있다.','P'],
+     ['일정이 갑자기 바뀌면 스트레스를 받는다.','J'],['계획이 바뀌어도 오히려 새로운 기회라고 느낀다.','P'],
+     ['할 일 목록을 만들어 하나씩 지워 가는 것이 만족스럽다.','J'],['선택지를 열어 두고 마지막까지 결정을 미루는 편이다.','P'],
+     ['결정을 빨리 내리고 마무리 짓는 것이 편하다.','J'],['여러 가지를 동시에 벌여 놓고 하는 편이다.','P'],
+     ['규칙과 절차를 지키는 것이 중요하다고 생각한다.','J'],['규칙은 상황에 따라 유연하게 적용해도 된다고 생각한다.','P'],
+     ['일을 시작하기 전에 순서를 정해 둔다.','J'],['일단 시작해 보고 하면서 방법을 찾는다.','P'],
+     ['정해 둔 일정대로 일이 진행되면 마음이 놓인다.','J'],['즉흥적으로 떠나는 여행이나 약속이 좋다.','P'],
+     ['해야 할 일을 미루면 마음이 불편해서 먼저 끝내 둔다.','J'],['일정을 빽빽하게 정해 두면 답답하다.','P'],
+     ['쇼핑이나 외출 전에 목록이나 동선을 정해 둔다.','J'],['마음이 바뀌면 이미 세운 계획도 가볍게 바꾼다.','P']]
+  ];
+  var ITEMS=[];
+  for(var qi=0;qi<24;qi++){for(var ai=0;ai<4;ai++){ITEMS.push({ax:ai,t:RAW[ai][qi][0],k:RAW[ai][qi][1]})}}
+  var LBL=['전혀 아니다','아니다','보통','그렇다','매우 그렇다'];
+  var PAGE=8;
+  var lab={stage:'intro',n:24,ans:{},page:0,pick:{}};
+
+  function labTotal(){return lab.n*4}
+  function labAnswered(){var c=0;for(var g=0;g<labTotal();g++){if(lab.ans[g])c++}return c}
+  function labTop(){var el=$('#lab');if(el)el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})}
+
+  function labScore(){
+    var res=[];
+    AXES.forEach(function(ax,a){
+      var sum=0,cnt=0;
+      for(var g=0;g<labTotal();g++){
+        if(ITEMS[g].ax!==a) continue;
+        var v=lab.ans[g]-3;
+        sum+=(ITEMS[g].k===ax[0]?v:-v); cnt++;
+      }
+      res.push(50+25*sum/cnt);
+    });
+    return res;
+  }
+  function labLetter(a,p1){return lab.pick[a]||(p1>=50?AXES[a][0]:AXES[a][1])}
+  function labCode(res){return res.map(function(p1,a){return labLetter(a,p1)}).join('')}
+  function labApply(){
+    var code=labCode(labScore());
+    st.m=mIdx(code); sync(); renderResult();
+  }
+  function strengthOf(p1){
+    var d=Math.abs(p1-50);
+    return d>=25?'뚜렷함':d>=12?'보통':d>=5?'약함':'경계';
+  }
+
+  function labIntro(){
+    return '<p class="muted" style="margin:2px 0 0;max-width:64ch">평소 편안할 때의 나를 기준으로 각 문장이 얼마나 나와 맞는지 5단계로 골라 주세요. 축마다 반대 방향 문장이 절반씩 섞여 있어서, 결과가 한쪽으로 쏠린 정도를 퍼센트로 계산해요.</p>'+
+      '<div class="modes">'+
+        '<button type="button" class="btn primary" data-lab="start" data-n="10">빠른 검사 · 40문항 · 약 5분</button>'+
+        '<button type="button" class="btn primary" data-lab="start" data-n="24">정밀 검사 · 96문항 · 약 12분 (권장)</button>'+
+      '</div>'+
+      '<ul class="tips">'+
+        '<li>공식 MBTI 문항이 아니라 이 페이지용 자체 문항이에요. 공식 검사(Global Step I)는 92문항이라 문항 수는 비슷하지만, 내용과 채점 방식은 달라요.</li>'+
+        '<li>직장이나 학교에서의 모습이 아니라, 힘 빼고 있을 때의 나를 떠올려 주세요.</li>'+
+        '<li>정답은 없어요. &lsquo;보통&rsquo;은 가능하면 줄이고 조금이라도 더 가까운 쪽을 골라 주세요.</li>'+
+        '<li>글자보다 퍼센트가 더 중요해요. 50%에 가까운 축은 다시 검사하면 글자가 바뀔 수 있어요.</li>'+
+      '</ul>';
+  }
+
+  function labQuiz(){
+    var tot=labTotal(), pages=Math.ceil(tot/PAGE), from=lab.page*PAGE, to=Math.min(from+PAGE,tot);
+    var done=labAnswered();
+    var html='<div class="prog"><div class="track"><div class="fill" id="labFill" style="--w:'+(done/tot*100)+'%"></div></div><span id="labCnt">'+done+' / '+tot+'</span></div>';
+    for(var g=from;g<to;g++){
+      html+='<fieldset class="q"><legend>'+(g+1)+'. '+ITEMS[g].t+'</legend><div class="lk" role="radiogroup">'+
+        [1,2,3,4,5].map(function(v){
+          return '<label class="lo"><input type="radio" name="lq'+g+'" value="'+v+'"'+(lab.ans[g]===v?' checked':'')+'><span>'+LBL[v-1]+'</span></label>';
+        }).join('')+'</div></fieldset>';
+    }
+    var last=lab.page===pages-1;
+    html+='<div class="nav">'+
+      (lab.page>0?'<button type="button" class="btn" data-lab="prev">이전</button>':'')+
+      '<button type="button" class="btn primary" data-lab="'+(last?'finish':'next')+'">'+(last?'결과 보기':'다음')+'</button>'+
+      '<span class="muted small">'+(lab.page+1)+' / '+pages+' 쪽</span>'+
+      '<p id="labMsg" role="status"></p></div>';
+    return html;
+  }
+
+  function labResult(){
+    var res=labScore(), tot=labTotal(), sumA=0, neu=0;
+    for(var g=0;g<tot;g++){sumA+=lab.ans[g]; if(lab.ans[g]===3) neu++}
+    var mean=sumA/tot, notes=[];
+    if(mean>=4) notes.push('대부분 &ldquo;그렇다&rdquo; 쪽으로 답했어요. 모든 문장에 동의하는 습관이 있으면 결과가 중간으로 몰려요.');
+    if(mean<=2) notes.push('대부분 &ldquo;아니다&rdquo; 쪽으로 답했어요. 결과가 중간으로 몰릴 수 있어요.');
+    if(neu/tot>=0.4) notes.push('&ldquo;보통&rdquo;이 '+Math.round(neu/tot*100)+'%예요. 보통 답이 많으면 경계 결과가 늘어나요.');
+    var axes=res.map(function(p1,a){
+      var ax=AXES[a], cur=labLetter(a,p1), d=Math.abs(p1-50), s=strengthOf(p1);
+      var pk=d<5?'<div class="pk">경계 구간이에요. 어느 쪽이 더 나 같은지 골라 보세요.'+
+        ax.slice(0,2).map(function(l,i){
+          return '<button type="button" class="btn" data-lab="pick" data-a="'+a+'" data-l="'+l+'" aria-pressed="'+(cur===l)+'">'+l+' '+ax[2+i]+'</button>';
+        }).join('')+'</div>':'';
+      return '<div class="axr"><div class="top3"><span class="lt2">'+ax[0]+' '+ax[2]+' '+Math.round(p1)+'%</span>'+
+        '<span class="chip">'+cur+' · '+s+'</span>'+
+        '<span class="lt2">'+Math.round(100-p1)+'% '+ax[3]+' '+ax[1]+'</span></div>'+
+        '<div class="tr" role="img" aria-label="'+ax[0]+' '+Math.round(p1)+'퍼센트, '+ax[1]+' '+Math.round(100-p1)+'퍼센트"><i style="--w:'+p1+'%"></i><b></b></div>'+pk+'</div>';
+    }).join('');
+    var code=labCode(res), m=MB[mIdx(code)];
+    return '<p class="muted" style="margin:2px 0 0">내 결과는</p>'+
+      '<div class="chips" style="margin-top:6px;align-items:center"><span class="labcode">'+code+'</span><span class="chip">'+m.n+'</span></div>'+
+      '<p class="small muted" style="margin:6px 0 0">위 결과 카드에 이 유형을 반영했어요. 막대의 가운데 선이 50%예요.</p>'+
+      axes+
+      (notes.length?'<ul class="tips">'+notes.map(function(n){return '<li>'+n+'</li>'}).join('')+'</ul>':'')+
+      '<p class="note">공식 MBTI도 결과를 &lsquo;같은 선호가 다시 나올 확률(50~100%)&rsquo;로 보여 줘요. 이 검사는 자체 문항이라 공식 검사와 결과가 다를 수 있고, 퍼센트가 50%에 가까울수록 글자가 바뀌기 쉬워요.</p>'+
+      '<div class="nav"><button type="button" class="btn primary" data-lab="show">결과 카드 보기</button>'+
+      '<button type="button" class="btn" data-lab="edit">답 고치기</button>'+
+      '<button type="button" class="btn" data-lab="reset">처음부터 다시</button></div>';
+  }
+
+  function labRender(){
+    var box=$('#labBody');
+    box.innerHTML=lab.stage==='intro'?labIntro():lab.stage==='quiz'?labQuiz():labResult();
+  }
+
+  document.addEventListener('change',function(e){
+    var el=e.target;
+    if(!el||!el.name||el.name.indexOf('lq')!==0) return;
+    lab.ans[+el.name.slice(2)]=+el.value;
+    var tot=labTotal(), done=labAnswered();
+    var f=$('#labFill'), c=$('#labCnt'), m=$('#labMsg');
+    if(f) f.style.setProperty('--w',(done/tot*100)+'%');
+    if(c) c.textContent=done+' / '+tot;
+    if(m) m.textContent='';
+  });
+
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('button'); if(!t) return;
+    if(t.id==='testToggle'){
+      var sec=$('#lab'), open=sec.hidden;
+      sec.hidden=!open; t.setAttribute('aria-expanded',String(open));
+      if(open){labRender();labTop()}
+      return;
+    }
+    var a=t.dataset.lab; if(!a) return;
+    if(a==='start'){lab.n=+t.dataset.n;lab.ans={};lab.page=0;lab.pick={};lab.stage='quiz';labRender();labTop();return}
+    if(a==='prev'){if(lab.page>0){lab.page--;labRender();labTop()}return}
+    if(a==='next'||a==='finish'){
+      var from=lab.page*PAGE, to=Math.min(from+PAGE,labTotal()), miss=0;
+      for(var g=from;g<to;g++){if(!lab.ans[g]) miss++}
+      if(miss){var mm=$('#labMsg'); if(mm) mm.textContent='이 쪽에 답하지 않은 문항이 '+miss+'개 있어요.'; return}
+      if(a==='next'){lab.page++;labRender();labTop();return}
+      lab.stage='result';lab.pick={};labApply();labRender();labTop();return;
+    }
+    if(a==='pick'){lab.pick[+t.dataset.a]=t.dataset.l;labApply();labRender();return}
+    if(a==='show'){$('#result').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});return}
+    if(a==='edit'){lab.stage='quiz';lab.page=0;labRender();labTop();return}
+    if(a==='reset'){lab.stage='intro';lab.ans={};lab.pick={};lab.page=0;labRender();labTop();return}
+  });
+
+  /* 가로 목록: 버튼으로 페이지 넘김 (스크롤이 안 되는 화면 대비) */
+  var PG={bgrid:{per:1,i:0},topList:{per:1,i:0},lowList:{per:1,i:0}};
+  function pgRender(id){
+    var el=document.getElementById(id),c=PG[id]; if(!el) return;
+    var kids=el.children,n=kids.length,max=Math.max(0,Math.ceil(n/c.per)-1);
+    if(c.i>max)c.i=max; if(c.i<0)c.i=0;
+    for(var k=0;k<n;k++){kids[k].classList.toggle('off',Math.floor(k/c.per)!==c.i)}
+    var pc=document.getElementById('pc-'+id);
+    if(pc){var a=c.i*c.per+1,b=Math.min(n,(c.i+1)*c.per);pc.textContent=(a===b?a:a+'–'+b)+' / '+n}
+  }
+  function pgMove(id,d){PG[id].i+=d;var el=document.getElementById(id),c=PG[id],max=Math.ceil(el.children.length/c.per)-1;if(PG[id].i>max)PG[id].i=0;if(PG[id].i<0)PG[id].i=max;pgRender(id)}
+  Object.keys(PG).forEach(function(id){
+    var el=document.getElementById(id); if(!el) return;
+    el.classList.add('pg');
+    var bar=document.createElement('div'); bar.className='scbar';
+    bar.innerHTML='<span class="pc" id="pc-'+id+'"></span><button type="button" data-sc="'+id+'" data-dir="-1" aria-label="이전">‹</button><button type="button" data-sc="'+id+'" data-dir="1" aria-label="다음">›</button>';
+    el.parentNode.insertBefore(bar,el); pgRender(id);
+    if(window.MutationObserver){new MutationObserver(function(){pgRender(id)}).observe(el,{childList:true})}
+  });
+
+  /* ---------- 이벤트 ---------- */
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('button'); if(!t) return;
+    if(t.dataset.sc){pgMove(t.dataset.sc,+t.dataset.dir);return}
+    if(t.dataset.pb!==undefined){st.b=+t.dataset.pb;sync();renderResult();return}
+    if(t.dataset.pm!==undefined){st.m=+t.dataset.pm;sync();renderResult();return}
+    if(t.dataset.cb!==undefined&&t.dataset.cm!==undefined){
+      st.b=+t.dataset.cb; st.m=+t.dataset.cm; sync(); renderResult(); return;
+    }
+    if(t.dataset.fam){st.b=0;st.m=mIdx(t.dataset.fam);sync();renderResult();$('#result').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});return}
+    if(t.dataset.metric!==undefined){
+      st.metric=+t.dataset.metric;
+      $$('#seg button').forEach(function(el){el.setAttribute('aria-pressed',String(+el.dataset.metric===st.metric))});
+      renderHeat(); return;
+    }
+    if(t.dataset.go){
+      var tg=document.getElementById(t.dataset.go);
+      if(tg) tg.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+      return;
+    }
+    if(t.classList.contains('to-result')){
+      $('#result').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+      return;
+    }
+  });
+
+  function renderBlood(){
+    function tags(a){return '<p class="tags">'+a.map(function(t){return '<span>'+t+'</span>'}).join('')+'</p>'}
+    $('#bgrid').innerHTML=BL.map(function(b,i){
+      var p=BP[i];
+      return '<article class="bc" data-bc="'+i+'" aria-current="false">'+
+        '<button type="button" class="bc-h" data-pb="'+i+'" aria-label="'+b.k+'형 선택"><span class="l" style="color:var('+b.v+')">'+b.k+'</span>'+
+        '<span><b>'+b.k+'형</b> <span class="muted">· '+p.nick+'</span></span></button>'+
+        '<h4>속설에서 말하는 장점</h4>'+tags(p.up)+
+        '<h4>속설에서 말하는 단점</h4>'+tags(p.down)+
+        '<p class="small" style="margin:8px 0 0">'+p.work+'</p>'+
+        '<dl class="facts sm" style="margin-top:8px"><dt>궁합 속설</dt><dd>'+p.mate+'</dd>'+
+        '<dt>한국 선호도</dt><dd>혈액형 성격론을 믿는 응답자 855명 중 '+p.like+'%가 가장 좋아한다고 답했어요.</dd></dl>'+
+        '<h4>의학적 사실</h4>'+
+        '<dl class="facts sm"><dt>적혈구 항원</dt><dd>'+p.ag+'</dd>'+
+        '<dt>혈장 항체</dt><dd>'+p.ab+'</dd>'+
+        '<dt>유전자 조합</dt><dd>'+p.gt+'</dd>'+
+        '<dt>받을 수 있는 혈액</dt><dd>'+p.get+'</dd>'+
+        '<dt>줄 수 있는 혈액</dt><dd>'+p.give+'</dd>'+
+        '<dt>건강 연구</dt><dd>'+p.health+'</dd></dl>'+
+        '<p class="note" style="margin-top:6px">수혈 항목은 적혈구 수혈 기준이에요. 건강 연구는 집단 통계라 차이가 작고 개인 위험을 말해 주지 않아요.</p>'+
+      '</article>';
+    }).join('');
+    $('#bdist').innerHTML=BL.map(function(b,i){
+      var p=BP[i];
+      return '<div class="d2"><span class="c" style="color:var('+b.v+')">'+b.k+'</span><div class="bar2">'+
+        '<div class="b"><span class="t"><i class="kr" style="--w:'+(p.kr/40*100)+'%"></i></span><em>한국 '+p.kr+'%</em></div>'+
+        '<div class="b"><span class="t"><i class="jp" style="--w:'+(p.jp/40*100)+'%"></i></span><em>일본 '+p.jp+'%</em></div>'+
+        '</div></div>';
+    }).join('');
+  }
+
+  function renderDist(){
+    $('#dist').innerHTML=DIST.map(function(d){
+      return '<button type="button" class="r" data-pm="'+mIdx(d[0])+'"><span class="c">'+d[0]+'</span>'+
+        '<span class="t"><i style="--w:'+(d[1]/24.7*100).toFixed(1)+'%"></i></span><span class="v">'+d[1].toFixed(1)+'%</span></button>';
+    }).join('');
+  }
+
+  buildPick(); buildSeg(); renderBlood(); renderHeat(); renderResult(); renderDist(); sync();
+})();
+</script>
+</body>
+</html>
